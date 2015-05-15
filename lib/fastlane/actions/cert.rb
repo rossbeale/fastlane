@@ -7,8 +7,6 @@ module Fastlane
 
     class CertAction < Action
       def self.run(params)
-        require 'cert'
-        require 'cert/options'
 
         return if Helper.test?
 
