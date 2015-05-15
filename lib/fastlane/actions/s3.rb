@@ -74,21 +74,6 @@ module Fastlane
         Helper.log.debug command
         Actions.sh command
 
-        #####################################
-        #
-        # html and plist building
-        #
-        #####################################
-
-        # Gets info used for the plist
-        bundle_id, bundle_version, title = get_ipa_info( ipa_file )
-
-        # Gets URL for IPA file
-        url_part = expand_path_with_substitutions_from_ipa_plist( ipa_file, s3_path )
-        ipa_file_name = File.basename(ipa_file)
-        ipa_url = "https://#{s3_subdomain}.amazonaws.com/#{s3_bucket}/#{url_part}#{ipa_file_name}"
-        dsym_url = "https://#{s3_subdomain}.amazonaws.com/#{s3_bucket}/#{url_part}#{dsym_file}" if dsym_file
-
         # Setting action and environment variables
         Actions.lane_context[SharedValues::S3_IPA_OUTPUT_PATH] = ipa_url
         ENV[SharedValues::S3_IPA_OUTPUT_PATH.to_s] = ipa_url
@@ -97,53 +82,6 @@ module Fastlane
           Actions.lane_context[SharedValues::S3_DSYM_OUTPUT_PATH] = dsym_url
           ENV[SharedValues::S3_DSYM_OUTPUT_PATH.to_s] = dsym_url
         end
-
-        # Creating plist and html names
-        plist_file_name = "#{url_part}#{title}.plist"
-        plist_url = "https://#{s3_subdomain}.amazonaws.com/#{s3_bucket}/#{plist_file_name}"
-
-        html_file_name ||= "index.html"
-        html_url = "https://#{s3_subdomain}.amazonaws.com/#{s3_bucket}/#{html_file_name}"
-
-        # Creates plist from template
-        plist_template_path ||= "#{Helper.gem_path('fastlane')}/lib/assets/s3_plist_template.erb"
-        plist_template = File.read(plist_template_path)
-
-        et = ErbalT.new({
-          url: ipa_url,
-          bundle_id: bundle_id,
-          bundle_version: bundle_version,
-          title: title
-          })
-        plist_render = et.render(plist_template)
-
-        # Creates html from template
-        html_template_path ||= "#{Helper.gem_path('fastlane')}/lib/assets/s3_html_template.erb"
-        html_template = File.read(html_template_path)
-
-        et = ErbalT.new({
-          url: plist_url,
-          bundle_id: bundle_id,
-          bundle_version: bundle_version,
-          title: title
-          })
-        html_render = et.render(html_template)
-
-        #####################################
-        #
-        # html and plist uploading
-        #
-        #####################################
-
-        upload_plist_and_html_to_s3(
-          s3_access_key,
-          s3_secret_access_key,
-          s3_bucket,
-          plist_file_name,
-          plist_render,
-          html_file_name,
-          html_render
-          )        
 
         return true
 
