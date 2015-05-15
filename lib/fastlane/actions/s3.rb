@@ -74,6 +74,15 @@ module Fastlane
         Helper.log.debug command
         Actions.sh command
 
+        # Gets info used for the plist
+        bundle_id, bundle_version, title = get_ipa_info( ipa_file )
+
+        # Gets URL for IPA file
+        url_part = expand_path_with_substitutions_from_ipa_plist( ipa_file, s3_path )
+        ipa_file_name = File.basename(ipa_file)
+        ipa_url = "https://#{s3_subdomain}.amazonaws.com/#{s3_bucket}/#{url_part}#{ipa_file_name}"
+        dsym_url = "https://#{s3_subdomain}.amazonaws.com/#{s3_bucket}/#{url_part}#{dsym_file}" if dsym_file
+
         # Setting action and environment variables
         Actions.lane_context[SharedValues::S3_IPA_OUTPUT_PATH] = ipa_url
         ENV[SharedValues::S3_IPA_OUTPUT_PATH.to_s] = ipa_url
