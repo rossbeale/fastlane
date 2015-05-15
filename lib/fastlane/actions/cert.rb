@@ -38,8 +38,6 @@ module Fastlane
       end
 
       def self.available_options
-        require 'cert'
-        require 'cert/options'
         Cert::Options.available_options
       end
 
