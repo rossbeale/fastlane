@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency 'nokogiri', '~> 1.6' # generating JUnit reports for Jenkins
-  spec.add_dependency 'shenzhen', '= 0.14.0' # to upload to Hockey and Crashlytics
+  spec.add_dependency 'krausefx-shenzhen', '= 0.14.2' # to upload to Hockey and Crashlytics
   spec.add_dependency 'slack-notifier', '~> 1.0' # Slack notifications
   spec.add_dependency 'aws-sdk', '~> 1.0' # Upload ipa files to S3
   spec.add_dependency 'xcodeproj', '~> 0.20' # Needed for commit_version_bump action
@@ -31,12 +31,12 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'terminal-notifier', '~> 1.6.2' # Mac OS X notifications
   spec.add_dependency 'terminal-table', '~> 1.4.5' # Actions documentation
 
-  spec.add_dependency 'fastlane_core', '>= 0.7.2' # all shared code and dependencies
+  spec.add_dependency 'fastlane_core', '>= 0.7.3' # all shared code and dependencies
 
   # All the fastlane tools
-  spec.add_dependency 'deliver', '>= 0.9.4'
-  spec.add_dependency 'snapshot', '>= 0.8.0'
-  spec.add_dependency 'frameit', '>= 1.0.1'
+  spec.add_dependency 'deliver', '>= 0.11.0'
+  spec.add_dependency 'snapshot', '>= 0.9.0'
+  spec.add_dependency 'frameit', '>= 2.0.0'
   spec.add_dependency 'pem', '>= 0.5.5'
   spec.add_dependency 'sigh', '>= 0.5.1'
   spec.add_dependency 'produce', '>= 0.2.1'

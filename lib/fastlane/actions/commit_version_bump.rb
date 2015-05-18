@@ -63,13 +63,18 @@ module Fastlane
         end
 
         # get the absolute paths to the files
-        git_add_paths = git_dirty_files.map { |path| File.expand_path(File.join(repo_pathname, path)) }
+        git_add_paths = expected_changed_files.map { |path| File.expand_path(File.join(repo_pathname, path)) }
 
         # then create a commit with a message
         Actions.sh("git add #{git_add_paths.map(&:shellescape).join(' ')}")
-        Actions.sh("git commit -m '#{params[:message]}'")
 
-        Helper.log.info "Committed \"#{params[:message]}\" 💾.".green
+        begin
+          Actions.sh("git commit -m '#{params[:message]}'")
+
+          Helper.log.info "Committed \"#{params[:message]}\" 💾.".green
+        rescue => ex
+          Helper.log.info "Didn't commit any changes.".yellow
+        end
       end
 
       def self.description
@@ -105,7 +110,7 @@ module Fastlane
       end
 
       def self.is_supported?(platform)
-        platform == :ios
+        [:ios, :mac].include?platform
       end
     end
   end

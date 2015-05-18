@@ -260,6 +260,21 @@ gcovr(
 )
 ```
 
+### [OCLint](http://oclint.org)
+Run the static analyzer tool [OCLint](http://oclint.org) for your project. You need to have a `compile_commands.json` file in your `fastlane` directory or pass a path to your file.
+
+```
+oclint({
+  compile_commands: 'commands.json', # The json compilation database, use xctool reporter 'json-compilation-database'
+  select_reqex: /ViewController.m/,  # Select all files matching this reqex
+  report_type: 'pmd',                # The type of the report (default: html)
+  max_priority_1: 10,                # The max allowed number of priority 1 violations
+  max_priority_2: 100,               # The max allowed number of priority 2 violations
+  max_priority_3: 1000,              # The max allowed number of priority 3 violations
+  rc: 'LONG_LINE=200'                # Override the default behavior of rules
+})  
+```
+
 ## Deploying
 
 ### [deliver](https://github.com/KrauseFx/deliver)
@@ -315,6 +330,8 @@ Additionally you can specify `notes_path`, `emails`, `groups` and `notifications
 The following environment variables may be used in place of parameters: `CRASHLYTICS_API_TOKEN`, `CRASHLYTICS_BUILD_SECRET`, and `CRASHLYTICS_FRAMEWORK_PATH`.
 
 ### AWS S3 Distribution
+
+Upload a new build to Amazon S3 to distribute the build to beta testers. Works for both Ad Hoc and Enterprise signed applications. This step will generate the necessary HTML and plist files for you.
 
 Add the `s3` action after the `ipa` step:
 
@@ -395,6 +412,16 @@ increment_version_number(
 )
 ```
 
+### set_build_number_repository
+```ruby
+set_build_number_repository
+```
+
+This action will set the **build number** according to what the SCM HEAD reports.
+Currently supported SCMs are svn (uses root revision), git-svn (uses svn revision) and git (uses short hash).
+
+There are no options currently available for this action.
+
 ## Developer Portal
 
 ### [sigh](https://github.com/KrauseFx/sigh)
@@ -427,7 +454,8 @@ pem
 ```ruby
 pem(
   force: true, # create a new profile, even if the old one is still valid
-  app_identifier: 'net.sunapps.9', # optional app identifier
+  app_identifier: 'net.sunapps.9', # optional app identifier,
+  save_private_key: true,
   new_profile: Proc.new do |profile_path| # this block gets called when a new profile was generated
     puts profile_path # the absolute path to the new PEM file
     # insert the code to upload the PEM file to the server
@@ -622,6 +650,32 @@ slack(
 )
 ```
 
+### [Mailgun](http://www.mailgun.com)
+Send email notifications right from `fastlane` using [Mailgun](http://www.mailgun.com). 
+
+```ruby
+ENV['MAILGUN_SANDBOX_DOMAIN'] ||= "MY_SANDBOX_DOMAIN"
+ENV['MAILGUN_SANDBOX_POSTMASTER'] ||= "MY_POSTMASTER"
+ENV['MAILGUN_APIKEY'] = "MY_API_KEY"
+
+mailgun(
+  to: "fastlane@krausefx.com",
+  success: true,
+  message: "This is the mail's content"
+)
+
+or
+
+mailgun(
+  mailgun_sandbox_domain: "SANDBOX_DOMAIN",
+  mailgun_sandbox_postmaster: "MY_POSTMASTER",
+  mailgun_apikey: "MY_API_KEY",
+  to: "DESTINATION_EMAIL",
+  success: true,
+  message: "Mail Body"
+)
+```
+
 ### [HipChat](http://www.hipchat.com/)
 Send a message to **room** (by default) or a direct message to **@username** with success (green) or failure (red) status.
 
@@ -663,6 +717,21 @@ Post a message to a **group**
   )
 ```
 
+### [ChatWork](http://www.chatwork.com/)
+Post a message to a **group chat**.
+
+[How to authenticate ChatWork API](http://developer.chatwork.com/ja/authenticate.html)
+
+```ruby
+  ENV["CHATWORK_API_TOKEN"] = "Your API token"
+
+  chatwork(
+    message: "App successfully released!",
+    roomid: 12345,
+    success: true
+  )
+```
+
 ### Notify
 Display a notification using the OS X notification centre. Uses [terminal-notifier](https://github.com/alloy/terminal-notifier).
 
@@ -683,9 +752,9 @@ testmunk
 
 ### update_fastlane
 
-This action will look at all installed fastlane tools and update them to the next available minor version - major version updates will not be performed automatically, as they might include breaking changes. If an update was performed, fastlane will be restarted before the run continues. 
+This action will look at all installed fastlane tools and update them to the next available minor version - major version updates will not be performed automatically, as they might include breaking changes. If an update was performed, fastlane will be restarted before the run continues.
 
-If you are using rbenv or rvm, everything should be good to go. However, if you are using the system's default ruby, some additional setup is needed for this action to work correctly. In short, fastlane needs to be able to access your gem library without running in `sudo` mode. 
+If you are using rbenv or rvm, everything should be good to go. However, if you are using the system's default ruby, some additional setup is needed for this action to work correctly. In short, fastlane needs to be able to access your gem library without running in `sudo` mode.
 
 The simplest possible fix for this is putting the following lines into your `~/.bashrc` or `~/.zshrc` file:
 
@@ -707,4 +776,3 @@ Recommended usage of the `update_fastlane` action is at the top of the `before_a
     ...
   end
 ```
-

@@ -101,7 +101,7 @@ Make sure, you have the latest version of the Xcode command line tools installed
 
     xcode-select --install
 
-If you want to take a look at a project, already using `fastlane`, check out the [fastlane-example project](https://github.com/krausefx/fastlane-example), or [Eidolon by Artsy](https://github.com/artsy/eidolon).
+If you want to take a look at a project, already using `fastlane`, check out the [fastlane-examples](https://github.com/fastlane/examples) with `fastlane` setups by Wikipedia, Product Hunt, MindNode and more.
 
 ## Quick Start
 
@@ -141,6 +141,12 @@ Usually you'll use fastlane by triggering individual lanes:
 - [`cert`](https://github.com/KrauseFx/cert): Automatically create and maintain iOS code signing certificates
 - [`codes`](https://github.com/KrauseFx/codes): Create promo codes for iOS Apps using the command line
 
+## Statistics
+
+`fastlane` tracks the number of errors for each action to detect integration issues. The data will be sent to [fastlane-enhancer](https://github.com/fastlane/enhancer) and is available publicly.
+
+You can easily opt-out by adding `opt_out_usage` to your `Fastfile` or by setting the environment variable `FASTLANE_OPT_OUT_USAGE`.
+
 ## Credentials
 A detailed description about how ```fastlane``` stores your credentials is available on a [separate repo](https://github.com/KrauseFx/CredentialsManager).
 
@@ -153,6 +159,7 @@ A detailed description about how ```fastlane``` stores your credentials is avail
 Thanks to all contributors for extending and improving the `fastlane` suite:
 
 - [Product Hunt](http://producthunt.com)
+- [MindNode](https://mindnode.com)
 - [Detroit Labs](http://www.detroitlabs.com/)
 - Josh Holtz ([@joshdholtz](https://twitter.com/joshdholtz))
 - Ash Furrow ([@ashfurrow](https://twitter.com/ashfurrow))
