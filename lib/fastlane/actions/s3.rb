@@ -8,8 +8,6 @@ module Fastlane
     module SharedValues
       S3_IPA_OUTPUT_PATH = :S3_IPA_OUTPUT_PATH
       S3_DSYM_OUTPUT_PATH = :S3_DSYM_OUTPUT_PATH
-      S3_PLIST_OUTPUT_PATH = :S3_PLIST_OUTPUT_PATH
-      S3_HTML_OUTPUT_PATH = :S3_HTML_OUTPUT_PATH
     end
 
     S3_ARGS_MAP = {
@@ -20,7 +18,7 @@ module Fastlane
       bucket: '-b',
       region: '-r',
       acl: '--acl',
-      source: '--source-dir',
+      source: '--source-dir',p
       path: '-P',
     }
 
@@ -38,9 +36,6 @@ module Fastlane
         params[:acl] = config[:acl]
         params[:source] = config[:source]
         params[:path] = config[:path]
-        params[:plist_template_path] = config[:plist_template_path]
-        params[:html_template_path] = config[:html_template_path]
-        params[:html_file_name] = config[:html_file_name]
 
         # Maps nice developer build parameters to Shenzhen args
         build_args = params_to_build_args(params)
@@ -58,10 +53,6 @@ module Fastlane
         raise "No S3 secret access key given, pass using `secret_access_key: 'secret key'`".red unless s3_secret_access_key.to_s.length > 0
         raise "No S3 bucket given, pass using `bucket: 'bucket'`".red unless s3_bucket.to_s.length > 0
         raise "No IPA file path given, pass using `ipa: 'ipa path'`".red unless ipa_file.to_s.length > 0
-
-        plist_template_path = params[:plist_template_path]
-        html_template_path = params[:html_template_path]
-        html_file_name = params[:html_file_name]
 
         if Helper.is_test?
           return build_args 
@@ -108,27 +99,6 @@ module Fastlane
             "#{S3_ARGS_MAP[k]} #{value}".strip
           end
         end.compact
-      end
-
-      def self.upload_plist_and_html_to_s3(s3_access_key, s3_secret_access_key, s3_bucket, plist_file_name, plist_render, html_file_name, html_render)
-        require 'aws-sdk'
-        s3_client = AWS::S3.new(
-            access_key_id: s3_access_key,
-            secret_access_key: s3_secret_access_key
-        )
-        bucket = s3_client.buckets[s3_bucket]
-
-        plist_obj = bucket.objects.create(plist_file_name, plist_render.to_s, :acl => :public_read)
-        html_obj = bucket.objects.create(html_file_name, html_render.to_s, :acl => :public_read)
-
-        # Setting actionand environment variables
-        Actions.lane_context[SharedValues::S3_PLIST_OUTPUT_PATH] = plist_obj.public_url.to_s
-        ENV[SharedValues::S3_PLIST_OUTPUT_PATH.to_s] = plist_obj.public_url.to_s
-
-        Actions.lane_context[SharedValues::S3_HTML_OUTPUT_PATH] = html_obj.public_url.to_s
-        ENV[SharedValues::S3_HTML_OUTPUT_PATH.to_s] = html_obj.public_url.to_s
-
-        Helper.log.info "Successfully uploaded ipa file to '#{html_obj.public_url.to_s}'".green
       end
 
       #
@@ -242,9 +212,7 @@ module Fastlane
       def self.output
         [
           ['S3_IPA_OUTPUT_PATH', 'Direct HTTP link to the uploaded ipa file'],
-          ['S3_DSYM_OUTPUT_PATH', 'Direct HTTP link to the uploaded dsym file'],
-          ['S3_PLIST_OUTPUT_PATH', 'Direct HTTP link to the uploaded plist file'],
-          ['S3_HTML_OUTPUT_PATH', 'Direct HTTP link to the uploaded HTML file']
+          ['S3_DSYM_OUTPUT_PATH', 'Direct HTTP link to the uploaded dsym file']
         ]
       end
 
