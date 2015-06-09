@@ -18,7 +18,7 @@ module Fastlane
       bucket: '-b',
       region: '-r',
       acl: '--acl',
-      source: '--source-dir',p
+      source: '--source-dir',
       path: '-P',
     }
 
